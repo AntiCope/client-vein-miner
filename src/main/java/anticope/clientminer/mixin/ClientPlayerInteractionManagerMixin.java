@@ -4,7 +4,6 @@ import anticope.clientminer.ClientVeinMiner;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +34,8 @@ public abstract class ClientPlayerInteractionManagerMixin  {
         if (client.options.attackKey.isPressed()) {
             ClientVeinMiner.miner.onTick();
         } else {
-            ClientVeinMiner.miner.onStopMining();
+            if (ClientVeinMiner.config.automine && ClientVeinMiner.miner.working) client.options.attackKey.setPressed(true);
+            else ClientVeinMiner.miner.onStopMining();
         }
     }
 }

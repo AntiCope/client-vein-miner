@@ -1,0 +1,19 @@
+{
+  "category.clientminer.cat": "Client Vein Miner binds",
+  "key.clientminer.vein": "Vein Miner enable",
+
+  "text.autoconfig.clientminer.title": "Client Vein Miner",
+
+  "text.autoconfig.clientminer.option.snapBack": "Snap camera back",
+  "text.autoconfig.clientminer.option.snapBack.@Tooltip": "After finishing mining a vein return camera to the state before.",
+
+  "text.autoconfig.clientminer.option.rotationSpeed": "Rotation speed",
+  "text.autoconfig.clientminer.option.rotationSpeed.@Tooltip": "Speed at which vein miner will switch to a new ore. 1 = instant.",
+
+  "text.autoconfig.clientminer.option.sound": "Finish sound",
+  "text.autoconfig.clientminer.option.sound.@Tooltip": "Play a chime sound after finishing mining a vein.",
+
+  "text.autoconfig.clientminer.option.automine": "Automatically mine",
+  "text.autoconfig.clientminer.option.automine.@Tooltip[0]": "ON = Automatically hold left click.",
+  "text.autoconfig.clientminer.option.automine.@Tooltip[1]": "OFF = Only mine when left click is held"
+}

@@ -17,9 +17,8 @@
 
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "anticope.clientminer.ClientVeinMiner"
-    ]
+    "modmenu": [ "anticope.clientminer.ModMenuIntegration" ],
+    "client": [ "anticope.clientminer.ClientVeinMiner" ]
   },
   "mixins": [
     "clientminer.mixins.json"

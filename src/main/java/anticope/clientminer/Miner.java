@@ -3,8 +3,8 @@ package anticope.clientminer;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.Hand;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -35,14 +35,30 @@ public class Miner {
     private float targetYaw = 0;
     private float targetPitch = 0;
 
+    private float startYaw = 0;
+    private float startPitch = 0;
+
     public boolean working = false;
 
     public void onStopMining() {
+        if (!working) return;
+
         blocks.clear();
         currentBlock = null;
         blockType = null;
         direction = null;
         working = false;
+
+        if (ClientVeinMiner.config.snapBack && mc.player != null) {
+            mc.player.setYaw(startYaw);
+            mc.player.setPitch(startPitch);
+        }
+
+        if (ClientVeinMiner.config.sound && world != null && mc.player != null)
+            world.playSoundFromEntity(mc.player, mc.player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.AMBIENT, 1f, 1f);
+
+        if (ClientVeinMiner.config.automine)
+            mc.options.attackKey.setPressed(false);
     }
 
     private boolean isValidDist(BlockPos blockPos) {
@@ -72,10 +88,14 @@ public class Miner {
 
         blocks.addAll(toAdd);
 
-        for (BlockPos newPos : toAdd) { addConnected(newPos); }
+        for (BlockPos newPos : toAdd) {
+            addConnected(newPos);
+        }
     }
 
     public void onStartMining(BlockPos block, Direction direction, ClientWorld world) {
+        startYaw = mc.player.getYaw();
+        startPitch = mc.player.getPitch();
         onStopMining();
         working = true;
         this.direction = direction;
@@ -107,6 +127,7 @@ public class Miner {
                 currentBlock = null;
                 return;
             }
+
         }
 
         //world.addParticle(ParticleTypes.SMALL_FLAME, currentBlock.getX() + 0.5, currentBlock.getY() + 1.1, currentBlock.getZ()+ 0.5, 0, 0, 0);
@@ -117,12 +138,31 @@ public class Miner {
         float yawDiff = mc.player.getYaw() - targetYaw;
         float pitchDiff = mc.player.getPitch() - targetPitch;
 
+        float rotationSpeed = MathHelper.clamp(ClientVeinMiner.config.rotationSpeed, 0.001f, 1f);
+
         if (Math.abs(yawDiff) > 3f || Math.abs(pitchDiff) > 3f) {
             yawDiff = MathHelper.clamp(yawDiff, -100f, 100f);
             pitchDiff = MathHelper.clamp(pitchDiff, -100f, 100f);
-            if (Math.abs(yawDiff) > 3f) mc.player.setYaw(mc.player.getYaw() - yawDiff*0.2f);
-            if (Math.abs(pitchDiff) > 3f) mc.player.setPitch(mc.player.getPitch() - pitchDiff*0.2f);
+
+            if (Math.abs(yawDiff) > 3f)
+                mc.player.setYaw(mc.player.getYaw() - yawDiff * rotationSpeed);
+            if (Math.abs(pitchDiff) > 3f)
+                mc.player.setPitch(mc.player.getPitch() - pitchDiff * rotationSpeed);
+
+            return;
         }
+
+//        if (ClientVeinMiner.config.raycast) {
+//            if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+//                BlockHitResult result = (BlockHitResult) mc.crosshairTarget;
+//                if (result.getBlockPos() != currentBlock) {
+//                    currentBlock = null;
+//                    return;
+//                } else {
+//                    direction = result.getSide();
+//                }
+//            }
+//        }
     }
 
     public static float getYaw(BlockPos pos) {
