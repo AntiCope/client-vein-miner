@@ -1,9 +1,6 @@
-# Fabric Example Mod
+# Client Vein Meiner
+*for fabric 1.19*
 
-## Setup
+Mines all nearby blocks of a given type after you mine the first one.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Requires cloth config and mod menu is recommended.
