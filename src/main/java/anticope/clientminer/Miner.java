@@ -5,6 +5,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -16,16 +18,16 @@ public class Miner {
 
     private static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    private final static List<BlockPos> blockOffsets = Arrays.asList(
+    private final static BlockPos[] blockOffsets = {
             new BlockPos(0, 1, 0),
             new BlockPos(1, 0, 0),
             new BlockPos(0, 0, 1),
             new BlockPos(-1, 0, 0),
             new BlockPos(0, 0, -1),
             new BlockPos(0, -1, 0)
-    );
+    };
 
-    private final Queue<BlockPos> blocks = new ArrayDeque<>();
+    private final Queue<BlockPos> blocks = new PriorityQueue<>(Miner::blockCompare);
 
     private Block blockType = null;
     private Direction direction = null;
@@ -66,7 +68,7 @@ public class Miner {
         double dy = (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose())) - (blockPos.getY() + direction.getOffsetY());
         double dz = (mc.player.getZ() - 0.5) - (blockPos.getZ() + direction.getOffsetZ());
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        return distance <= mc.interactionManager.getReachDistance();
+        return distance < mc.interactionManager.getReachDistance();
     }
 
     private boolean canBreak(BlockPos blockPos) {
@@ -76,21 +78,15 @@ public class Miner {
     }
 
     private void addConnected(BlockPos pos) {
-        var toAdd = new ArrayList<BlockPos>();
         for (BlockPos offset : blockOffsets) {
             var newPos = pos.add(offset);
             if (world.getBlockState(newPos).getBlock() != blockType) continue;
             if (!isValidDist(newPos)) continue;
             if (!canBreak(newPos)) continue;
             if (blocks.contains(newPos)) continue;
-            toAdd.add(newPos);
-        }
-
-        blocks.addAll(toAdd);
-
-        for (BlockPos newPos : toAdd) {
+            blocks.add(newPos);
             addConnected(newPos);
-        }
+        }    
     }
 
     public void onStartMining(BlockPos block, Direction direction, ClientWorld world) {
@@ -152,17 +148,17 @@ public class Miner {
             return;
         }
 
-//        if (ClientVeinMiner.config.raycast) {
-//            if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == HitResult.Type.BLOCK) {
-//                BlockHitResult result = (BlockHitResult) mc.crosshairTarget;
-//                if (result.getBlockPos() != currentBlock) {
-//                    currentBlock = null;
-//                    return;
-//                } else {
-//                    direction = result.getSide();
-//                }
-//            }
-//        }
+        if (ClientVeinMiner.config.raycast) {
+            if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == Type.BLOCK) {
+                BlockHitResult hit = (BlockHitResult)mc.crosshairTarget;
+                if (world.getBlockState(hit.getBlockPos()).getBlock() != blockType) {
+                    currentBlock = null;
+                    if (ClientVeinMiner.config.automine)
+                        mc.options.attackKey.setPressed(false);
+                    return;
+                }
+            }
+        }
     }
 
     public static float getYaw(BlockPos pos) {
@@ -177,5 +173,13 @@ public class Miner {
         double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
         return mc.player.getPitch() + MathHelper.wrapDegrees((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)) - mc.player.getPitch());
+    }
+
+    public static int blockCompare(BlockPos p1, BlockPos p2) {
+        var mc = MinecraftClient.getInstance();
+        return Integer.compare(
+            mc.player.getBlockPos().getManhattanDistance(p1),
+            mc.player.getBlockPos().getManhattanDistance(p2)
+        );
     }
 }

@@ -25,7 +25,11 @@
   ],
 
   "depends": {
-    "fabricloader": "*",
+    "fabric": "*",
+    "cloth-config": "*",
     "minecraft": "~${mc_version}"
+  },
+  "suggests": {
+    "modmenu": "*"
   }
 }

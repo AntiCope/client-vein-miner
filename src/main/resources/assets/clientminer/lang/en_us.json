@@ -6,6 +6,10 @@
 
   "text.autoconfig.clientminer.title": "⛏ Client Vein Miner ⛏",
 
+  "text.autoconfig.clientminer.option.raycast": "Raycast",
+  "text.autoconfig.clientminer.option.raycast.@Tooltip[0]": "Prevents mining blocks other than the vein.",
+  "text.autoconfig.clientminer.option.raycast.@Tooltip[1]": "Skips mining unexposed vein blocks.",
+
   "text.autoconfig.clientminer.option.snapBack": "Snap camera back",
   "text.autoconfig.clientminer.option.snapBack.@Tooltip": "After finishing mining a vein return camera to the state before.",
 
