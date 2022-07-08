@@ -1,6 +1,9 @@
 package anticope.clientminer.mixin;
 
+import anticope.clientminer.ClientMinerConfig;
 import anticope.clientminer.ClientVeinMiner;
+import me.shedaniel.autoconfig.AutoConfig;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -23,7 +26,7 @@ public abstract class ClientPlayerInteractionManagerMixin  {
 
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     private void onAttackBlock(BlockPos blockPos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        if (ClientVeinMiner.keyBinding.isPressed() && !ClientVeinMiner.miner.working) {
+        if (ClientVeinMiner.veinKey.isPressed() && !ClientVeinMiner.miner.working) {
             cir.cancel();
             ClientVeinMiner.miner.onStartMining(blockPos, direction, networkHandler.getWorld());
         }
@@ -31,11 +34,23 @@ public abstract class ClientPlayerInteractionManagerMixin  {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (client.options.attackKey.isPressed()) {
-            ClientVeinMiner.miner.onTick();
-        } else {
-            if (ClientVeinMiner.config.automine && ClientVeinMiner.miner.working) client.options.attackKey.setPressed(true);
-            else ClientVeinMiner.miner.onStopMining();
+        if (ClientVeinMiner.miner.working) {
+            if (client.options.attackKey.isPressed()) {
+                ClientVeinMiner.miner.onTick();
+            } else {
+                if (ClientVeinMiner.config.automine && ClientVeinMiner.miner.working) client.options.attackKey.setPressed(true);
+                else ClientVeinMiner.miner.onStopMining();
+            }
+            if (ClientVeinMiner.stopKey.isPressed()) {
+                ClientVeinMiner.miner.onStopMining();
+            }
+        }
+        if (ClientVeinMiner.configKey.isPressed()) {
+            try {
+                client.setScreen(AutoConfig.getConfigScreen(ClientMinerConfig.class, client.currentScreen).get());
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
