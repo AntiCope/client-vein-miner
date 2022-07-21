@@ -51,15 +51,15 @@ public class Miner {
         direction = null;
         working = false;
 
-        if (ClientVeinMiner.config.snapBack && mc.player != null) {
+        if (Constants.config.snapBack && mc.player != null) {
             mc.player.setYaw(startYaw);
             mc.player.setPitch(startPitch);
         }
 
-        if (ClientVeinMiner.config.sound && world != null && mc.player != null)
+        if (Constants.config.sound && world != null && mc.player != null)
             world.playSoundFromEntity(mc.player, mc.player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.AMBIENT, 1f, 1f);
 
-        if (ClientVeinMiner.config.automine)
+        if (Constants.config.automine)
             mc.options.attackKey.setPressed(false);
     }
 
@@ -134,7 +134,7 @@ public class Miner {
         float yawDiff = mc.player.getYaw() - targetYaw;
         float pitchDiff = mc.player.getPitch() - targetPitch;
 
-        float rotationSpeed = MathHelper.clamp(ClientVeinMiner.config.rotationSpeed, 0.001f, 1f);
+        float rotationSpeed = MathHelper.clamp(Constants.config.rotationSpeed, 0.001f, 1f);
 
         if (Math.abs(yawDiff) > 3f || Math.abs(pitchDiff) > 3f) {
             yawDiff = MathHelper.clamp(yawDiff, -100f, 100f);
@@ -148,12 +148,12 @@ public class Miner {
             return;
         }
 
-        if (ClientVeinMiner.config.raycast) {
+        if (Constants.config.raycast) {
             if (mc.crosshairTarget != null && mc.crosshairTarget.getType() == Type.BLOCK) {
                 BlockHitResult hit = (BlockHitResult)mc.crosshairTarget;
                 if (world.getBlockState(hit.getBlockPos()).getBlock() != blockType) {
                     currentBlock = null;
-                    if (ClientVeinMiner.config.automine)
+                    if (Constants.config.automine)
                         mc.options.attackKey.setPressed(false);
                     return;
                 }

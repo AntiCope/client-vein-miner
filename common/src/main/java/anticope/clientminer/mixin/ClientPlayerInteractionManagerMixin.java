@@ -1,7 +1,7 @@
 package anticope.clientminer.mixin;
 
 import anticope.clientminer.ClientMinerConfig;
-import anticope.clientminer.ClientVeinMiner;
+import anticope.clientminer.Constants;
 import me.shedaniel.autoconfig.AutoConfig;
 
 import net.minecraft.client.MinecraftClient;
@@ -26,26 +26,26 @@ public abstract class ClientPlayerInteractionManagerMixin  {
 
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     private void onAttackBlock(BlockPos blockPos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        if (ClientVeinMiner.veinKey.isPressed() && !ClientVeinMiner.miner.working) {
+        if (Constants.veinKey.isPressed() && !Constants.miner.working) {
             cir.cancel();
-            ClientVeinMiner.miner.onStartMining(blockPos, direction, networkHandler.getWorld());
+            Constants.miner.onStartMining(blockPos, direction, networkHandler.getWorld());
         }
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (ClientVeinMiner.miner.working) {
+        if (Constants.miner.working) {
             if (client.options.attackKey.isPressed()) {
-                ClientVeinMiner.miner.onTick();
+                Constants.miner.onTick();
             } else {
-                if (ClientVeinMiner.config.automine && ClientVeinMiner.miner.working) client.options.attackKey.setPressed(true);
-                else ClientVeinMiner.miner.onStopMining();
+                if (Constants.config.automine && Constants.miner.working) client.options.attackKey.setPressed(true);
+                else Constants.miner.onStopMining();
             }
-            if (ClientVeinMiner.stopKey.isPressed()) {
-                ClientVeinMiner.miner.onStopMining();
+            if (Constants.stopKey.isPressed()) {
+                Constants.miner.onStopMining();
             }
         }
-        if (ClientVeinMiner.configKey.isPressed()) {
+        if (Constants.configKey.isPressed()) {
             try {
                 client.setScreen(AutoConfig.getConfigScreen(ClientMinerConfig.class, client.currentScreen).get());
             } catch (NullPointerException e) {

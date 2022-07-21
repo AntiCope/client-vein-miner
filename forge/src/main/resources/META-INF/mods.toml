@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[41,)"
+#issueTrackerURL = ""
+license = "Insert License Here"
+
+[[mods]]
+modId = "clientminer"
+version = "${version}"
+displayName = "Client Vein Miner"
+authors = "Cloudburst"
+description = '''
+Mines all nearby blocks of a given type after you mine the first one
+'''
+logoFile = "icon.png"
+
+[[dependencies.clientminer]]
+modId = "forge"
+mandatory = true
+versionRange = "[41,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.clientminer]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.clientminer]]
+modId = "cloth_config"
+mandatory = true
+versionRange = "[7.0.72,)"
+ordering = "AFTER"
+side = "BOTH"

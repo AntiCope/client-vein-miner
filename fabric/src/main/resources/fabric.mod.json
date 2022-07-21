@@ -27,7 +27,7 @@
   "depends": {
     "fabric": "*",
     "cloth-config": "*",
-    "minecraft": "~${mc_version}"
+    "minecraft": "~1.19"
   },
   "suggests": {
     "modmenu": "*"
