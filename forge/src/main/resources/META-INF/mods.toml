@@ -23,13 +23,13 @@ side = "BOTH"
 [[dependencies.clientminer]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19,)"
+versionRange = "[${mc_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.clientminer]]
 modId = "cloth_config"
 mandatory = true
-versionRange = "[7.0.72,)"
+versionRange = "[${cloth_version},)"
 ordering = "AFTER"
 side = "BOTH"

@@ -34,8 +34,6 @@ public class Miner {
     private ClientWorld world = null;
 
     public BlockPos currentBlock = null;
-    private float targetYaw = 0;
-    private float targetPitch = 0;
 
     private float startYaw = 0;
     private float startPitch = 0;
@@ -63,26 +61,27 @@ public class Miner {
             mc.options.attackKey.setPressed(false);
     }
 
-    private boolean isValidDist(BlockPos blockPos) {
+    private boolean invalidDist(BlockPos blockPos) {
+        if (mc.player == null) return true;
         double dx = (mc.player.getX() - 0.5) - (blockPos.getX() + direction.getOffsetX());
         double dy = (mc.player.getY() + mc.player.getEyeHeight(mc.player.getPose())) - (blockPos.getY() + direction.getOffsetY());
         double dz = (mc.player.getZ() - 0.5) - (blockPos.getZ() + direction.getOffsetZ());
         double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        return distance < mc.interactionManager.getReachDistance();
+        return distance >= mc.interactionManager.getReachDistance();
     }
 
-    private boolean canBreak(BlockPos blockPos) {
+    private boolean cannotBreak(BlockPos blockPos) {
         var state = world.getBlockState(blockPos);
-        if (!mc.player.isCreative() && state.getHardness(mc.world, blockPos) < 0) return false;
-        return state.getOutlineShape(mc.world, blockPos) != VoxelShapes.empty();
+        if (!mc.player.isCreative() && state.getHardness(mc.world, blockPos) < 0) return true;
+        return state.getOutlineShape(mc.world, blockPos) == VoxelShapes.empty();
     }
 
     private void addConnected(BlockPos pos) {
         for (BlockPos offset : blockOffsets) {
             var newPos = pos.add(offset);
             if (world.getBlockState(newPos).getBlock() != blockType) continue;
-            if (!isValidDist(newPos)) continue;
-            if (!canBreak(newPos)) continue;
+            if (invalidDist(newPos)) continue;
+            if (cannotBreak(newPos)) continue;
             if (blocks.contains(newPos)) continue;
             blocks.add(newPos);
             addConnected(newPos);
@@ -118,8 +117,8 @@ public class Miner {
             }
         } else {
             if (world.getBlockState(currentBlock).getBlock() != blockType
-                    || !isValidDist(currentBlock)
-                    || !canBreak(currentBlock)) {
+                    || invalidDist(currentBlock)
+                    || cannotBreak(currentBlock)) {
                 currentBlock = null;
                 return;
             }
@@ -128,8 +127,8 @@ public class Miner {
 
         //world.addParticle(ParticleTypes.SMALL_FLAME, currentBlock.getX() + 0.5, currentBlock.getY() + 1.1, currentBlock.getZ()+ 0.5, 0, 0, 0);
 
-        targetYaw = getYaw(currentBlock);
-        targetPitch = getPitch(currentBlock);
+        float targetYaw = getYaw(currentBlock);
+        float targetPitch = getPitch(currentBlock);
 
         float yawDiff = mc.player.getYaw() - targetYaw;
         float pitchDiff = mc.player.getPitch() - targetPitch;
