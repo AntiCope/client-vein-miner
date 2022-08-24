@@ -26,7 +26,7 @@
 
   "depends": {
     "fabric": "*",
-    "cloth-config": ">=${cloth_version}",
+    "cloth-config": "*",
     "minecraft": "~${mc_version}"
   },
   "suggests": {
