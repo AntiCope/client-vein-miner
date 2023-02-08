@@ -16,7 +16,7 @@ logoFile = "icon.png"
 [[dependencies.clientminer]]
 modId = "forge"
 mandatory = true
-versionRange = "[43,)"
+versionRange = "[44,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -30,6 +30,6 @@ side = "BOTH"
 [[dependencies.clientminer]]
 modId = "cloth_config"
 mandatory = true
-versionRange = "[${cloth_version},)"
+versionRange = "[9,)"
 ordering = "AFTER"
 side = "BOTH"
